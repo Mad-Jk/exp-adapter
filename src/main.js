@@ -5,5 +5,4 @@
  */
 
 var expConfigParser = require('./exp_config_parser.js');
-
-console.log(expConfig);
+console.log(expConfigParser);

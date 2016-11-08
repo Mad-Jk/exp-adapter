@@ -6,6 +6,8 @@
  */
 
 const $ = require('jquery');
+require('jquery.cookie');
+
 const _ = require('lodash');
 const md5 = require('md5');
 
