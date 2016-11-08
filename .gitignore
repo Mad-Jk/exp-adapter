@@ -1,0 +1,10 @@
+node_modules
+bower_components
+*.sublime-project
+*.sublime-workspace
+*.nohup.out
+*.min.js
+*.min.js.gz
+*.DS_Store
+._*
+build
