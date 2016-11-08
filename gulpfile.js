@@ -5,6 +5,7 @@ const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 const eslint = require('gulp-eslint');
 const sourcemaps = require('gulp-sourcemaps');
+const gulpSequence = require('gulp-sequence');
 const del = require('del');
 
 const browserify = require('browserify');
@@ -65,9 +66,7 @@ const doBundle = (b) => {
 };
 
 
-gulp.task('default', () => {
-    console.log('gulp default');
-});
+gulp.task('default', gulpSequence('clean', 'build-lib', 'watch'));
 
 gulp.task('clean', () => {
     return del([
