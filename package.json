@@ -14,6 +14,7 @@
     "browserify": "^13.1.1",
     "browserify-derequire": "^0.9.4",
     "browserify-shim": "^3.8.12",
+    "del": "^2.2.2",
     "gulp": "^3.9.1",
     "gulp-eslint": "^3.0.1",
     "gulp-rename": "^1.2.2",

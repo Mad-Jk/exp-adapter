@@ -5,13 +5,27 @@ const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 const eslint = require('gulp-eslint');
 const sourcemaps = require('gulp-sourcemaps');
+const del = require('del');
 
 const browserify = require('browserify');
 const babelify = require('babelify');
 const watchify = require('watchify');
 
+const externalLib = [
+    'jquery',
+    'jquery.cookie',
+    'lodash',
+    'md5'
+];
 
-let doLint = (paths, exit) => {
+const browserifyConfig = {
+    entries: ['src/main.js'],
+    transform: [babelify],
+    // plugin: ['browserify-shim'],
+    debug: true
+};
+
+const doLint = (paths, exit) => {
     return gulp.src(paths)
         .pipe(eslint({
             // http://eslint.org/docs/user-guide/configuring#using-configuration-files
@@ -20,15 +34,7 @@ let doLint = (paths, exit) => {
         .pipe(exit ? eslint.failAfterError() : eslint.result(() => {}));
 };
 
-let doWatchify = () => {
-
-    let browserifyConfig = {
-        entries: ['src/main.js'],
-        external: [],
-        transform: [babelify],
-        // plugin: ['browserify-shim'],
-        debug: true
-    };
+const doWatchify = () => {
 
     let opts = Object.assign({}, watchify.args, browserifyConfig);
 
@@ -40,8 +46,14 @@ let doWatchify = () => {
     return b;
 };
 
-let doBundle = (b) => {
-    return b.bundle()
+
+const doBundle = (b) => {
+    if (!b) {
+        b = browserify(browserifyConfig);
+    }
+
+    return b.external(externalLib)
+        .bundle()
         .on('error', console.error.bind(console))
         .pipe(source('bundle.js'))
         .pipe(buffer())
@@ -53,8 +65,14 @@ let doBundle = (b) => {
 };
 
 
-gulp.task('default', function () {
+gulp.task('default', () => {
     console.log('gulp default');
+});
+
+gulp.task('clean', () => {
+    return del([
+        'build/*'
+    ]);
 });
 
 gulp.task('watch', () => {
@@ -69,6 +87,14 @@ gulp.task('watch', () => {
     return doBundle(doWatchify());
 });
 
-gulp.task('lint', function () {
+gulp.task('build-lib', () => {
+    let b = browserify({})
+        .require(externalLib)
+        .bundle()
+        .pipe(source('common.js'))
+        .pipe(gulp.dest('./build'));
+});
+
+gulp.task('lint', () => {
     return doLint(['gulpfile.js', 'src/**/*.js'], true);
 });
